@@ -1,0 +1,20 @@
+{
+    "surfaces": 
+    [
+        {
+            "root": [0, 0, 7],
+            "dims": [1, 0.05, 0.5],
+            "rotZ": 0,
+            "lift": false,
+            "mirrorX": true,
+            "mirrorY": false
+        }
+    ],
+    "weights": 
+    [
+        {
+            "root": [0, 0, 0],
+            "mass": 100
+        }
+    ]
+}

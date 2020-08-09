@@ -1,0 +1,38 @@
+{
+    "origin": [0, 0, 0],
+    "surfaces": 
+    [
+        {
+            "root": [-10, 0, 0],
+            "span": [20, 0, 0],
+            "chord": [0, 0, 1.3],
+            "lift": true,
+            "mirror": false
+        },
+        {
+            "root": [-2, 1, -10],
+            "span": [4, 0, 0],
+            "chord": [0, 0, 0.8],
+            "lift": true,
+            "mirror": false
+        },
+        {
+            "root": [0, 0, -10],
+            "span": [0, 4, 0],
+            "chord": [0, 0, 2],
+            "lift": false,
+            "mirror": false
+        }
+    ],
+    "weights":
+    [
+        {
+            "root": [0, 0, 5],
+            "mass": 80
+        },
+        {
+            "root": [0, 0, 5],
+            "mass": 80
+        }
+    ]
+}

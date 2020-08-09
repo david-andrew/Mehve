@@ -16,9 +16,16 @@ _global_script_class_icons={
 [application]
 
 config/name="Mehve"
-run/main_scene="res://Root.tscn"
-config/icon="res://icon.png"
+run/main_scene="res://scenes/TestLevel.tscn"
+config/icon="res://textures/icon.png"
+
+[layer_names]
+
+3d_physics/layer_1="general_collision"
+3d_physics/layer_2="vehicle_collider"
+3d_physics/layer_3="no_collision"
 
 [rendering]
 
+quality/filters/anisotropic_filter_level=16
 environment/default_environment="res://default_env.tres"
