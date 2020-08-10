@@ -19,6 +19,11 @@ var yaw = 0
 export var TORQUE_APPLY = 50#0.5
 export var THRUST_DELTA = 10#0.1
 
+const ROLL_STRENGTH = 5000
+const PITCH_STRENGTH = 10000
+const YAW_STRENGTH = 5000
+const THRUST_STRENGHT = 5000
+
 
 var surfaces = [] #array of surface nodes
 var weights = []
@@ -40,8 +45,24 @@ class Surface:
 func _ready():
 	load_aerodynamics()
 	add_surface_geometry()
-#	apply_torque_impulse(Vector3(0, 0, 5000))
+#	apply_torque_impulse(Vector3.BACK * 10000)
+#	apply_central_impulse()
+	linear_velocity = global_transform.basis.xform(Vector3.FORWARD) * 200
 	
+func _process(delta):
+	pitch = Input.get_action_strength("player_pitch_up") - Input.get_action_strength("player_pitch_down")
+	thrust = Input.get_action_strength("player_thrust_up") - Input.get_action_strength("player_thrust_down")
+	roll = Input.get_action_strength("player_roll_left") - Input.get_action_strength("player_roll_right")
+	yaw = Input.get_action_strength("player_yaw_left") - Input.get_action_strength("player_yaw_right")
+
+#	if abs(pitch) < 0.1:
+#		pitch = 0
+#	if abs(roll) < 0.1:
+#		roll = 0
+#	if abs(yaw) < 0.1:
+#		yaw = 0
+	pass
+
 
 func _integrate_forces(state):
 	var net_force = Vector3.ZERO
@@ -58,13 +79,27 @@ func _integrate_forces(state):
 		
 		net_force += Fy
 		
-		var local_torque = surface.spatial.transform.basis.xform(surface.spatial.global_transform.basis.xform_inv(Fy))
-		net_torque += surface.spatial.transform.origin.cross(local_torque)
+		var r: Vector3 = surface.spatial.global_transform.origin - global_transform.origin
+		var T: Vector3 = r.cross(Fy)
+		net_torque += T
 		
 	
-	state.linear_velocity += (net_force / mass) * state.step
 	
-#	state.apply_torque_impulse(net_torque * state.step)
+		#player input control
+	var roll_torque: Vector3 = global_transform.basis.xform(Vector3.BACK) * roll * ROLL_STRENGTH
+	var yaw_torque: Vector3 = global_transform.basis.xform(Vector3.UP) * yaw * YAW_STRENGTH
+	var pitch_torque: Vector3 = global_transform.basis.xform(Vector3.RIGHT) * pitch * PITCH_STRENGTH
+	
+	net_torque += roll_torque + yaw_torque + pitch_torque
+	
+#	state.linear_velocity += (net_force / mass) * state.step
+	state.apply_central_impulse(net_force * state.step)
+	state.apply_torque_impulse(net_torque * state.step)
+	
+	
+
+#	state.apply_torque_impulse((roll_torque + yaw_torque + pitch_torque) * state.step)
+
 
 func load_aerodynamics():
 	var file = File.new()
