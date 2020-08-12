@@ -2,15 +2,15 @@
     "surfaces": 
     [
         {
-            "root": [0, 0, 2.5],
-            "dims": [8.75, 0.05, 1],
-            "rotZ": 5,
+            "root": [0, 0, 0.5],
+            "dims": [2, 0.05, 1],
+            "rotZ": 2,
             "lift": true,
             "mirrorX": true,
             "mirrorY": false
         },
         {
-            "root": [0, 0, 7],
+            "root": [0, 0, 5],
             "dims": [1, 0.05, 0.5],
             "rotZ": 0,
             "lift": false,
@@ -18,7 +18,7 @@
             "mirrorY": false
         },
         {
-            "root": [0, 0, 7],
+            "root": [0, 0, 5],
             "dims": [1, 0.05, 0.5],
             "rotZ": 90,
             "lift": false,
@@ -30,7 +30,7 @@
     [
         {
             "root": [0, 0, 0],
-            "mass": 1000
+            "mass": 500
         }
     ]
 }

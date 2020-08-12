@@ -11,7 +11,7 @@ flags_vertex_lighting = true
 flags_do_not_receive_shadows = true
 flags_disable_ambient_light = true
 albedo_texture = ExtResource( 1 )
-uv1_scale = Vector3( 1536, 1024, 1 )
+uv1_scale = Vector3( 3072, 2048, 1 )
 
 [sub_resource type="CubeMesh" id=3]
 material = SubResource( 2 )
@@ -40,7 +40,7 @@ mesh = SubResource( 3 )
 material/0 = null
 
 [node name="TestGlider" type="RigidBody" parent="."]
-transform = Transform( 0.875617, 0.347823, -0.335134, -0.46307, 0.801812, -0.377708, 0.137339, 0.485918, 0.863146, 0, 10.7813, 264.563 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 181.233, 149.879 )
 script = ExtResource( 2 )
 
 [node name="Camera" type="Camera" parent="TestGlider"]
@@ -63,5 +63,5 @@ shape = SubResource( 6 )
 [node name="MeshRoot" type="Spatial" parent="TestGlider"]
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.880097, 0.474795, 0, -0.474795, 0.880097, 0, 113.71, 286.08 )
+transform = Transform( 1, 0, 0, 0, 0.999825, 0.0187261, 0, -0.0187261, 0.999825, 0, 113.71, 286.08 )
 far = 2000.0
