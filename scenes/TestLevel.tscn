@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://textures/grass.jpg" type="Texture" id=1]
 [ext_resource path="res://scenes/TestGlider.gd" type="Script" id=2]
@@ -15,14 +15,6 @@ uv1_scale = Vector3( 3072, 2048, 1 )
 material = SubResource( 2 )
 
 [sub_resource type="BoxShape" id=4]
-
-[sub_resource type="CapsuleShape" id=5]
-radius = 0.01
-height = 2.0
-
-[sub_resource type="CapsuleShape" id=6]
-radius = 0.01
-height = 6.0
 
 [node name="TestLevel" type="Spatial"]
 
@@ -44,14 +36,6 @@ script = ExtResource( 2 )
 [node name="MassSimulator" type="CollisionShape" parent="TestGlider"]
 transform = Transform( 1, 1.0943e-08, 0, 8.03266e-09, 1, 1.86265e-09, 3.72529e-09, 1.86265e-09, 1, 0, 0, 0 )
 shape = SubResource( 4 )
-
-[node name="CollisionShape" type="CollisionShape" parent="TestGlider"]
-transform = Transform( 1, 2.73576e-09, -4.65661e-10, 2.44472e-09, 1, -1.49012e-08, -1.39698e-09, 0, 1, 0, 0, 0 )
-shape = SubResource( 5 )
-
-[node name="CollisionShape2" type="CollisionShape" parent="TestGlider"]
-transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, 0 )
-shape = SubResource( 6 )
 
 [node name="MeshRoot" type="Spatial" parent="TestGlider"]
 
