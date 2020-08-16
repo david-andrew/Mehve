@@ -20,15 +20,17 @@ export var TORQUE_APPLY = 50#0.5
 export var THRUST_DELTA = 1.0#0.1
 
 const ROLL_DEFLECTION = PI / 8
-const PITCH_DEFLECTION = PI / 8
+const PITCH_DEFLECTION = PI / 12
+const YAW_DEFLECTION = PI / 8
 
 
 #PID gains for controller
 const roll_p = 1.0#2.0
-const roll_d = 0.0#0.5
-
-const pitch_p = 0.5
+const roll_d = 0.5
+const pitch_p = 1.0
 const pitch_d = 0.0
+const yaw_p = 2.0
+const yaw_d = 2.0
 
 var prev_local_angular_velocity: Vector3 = Vector3.ZERO
 
@@ -52,6 +54,7 @@ class Surface:
     var lift: bool
     var pitch: float
     var roll: float
+    var yaw: float
     var mirrorX: bool
     var mirrorY: bool
 
@@ -64,28 +67,30 @@ func _ready():
 #	apply_central_impulse()
     linear_velocity = global_transform.basis.xform(Vector3.FORWARD) * 50
 #    angular_velocity = global_transform.basis.xform(Vector3.BACK) * 20
-    thrust = 0.75
+    thrust = 0.80
     
 func _process(delta):
     pitch = Input.get_action_strength("player_pitch_up") - Input.get_action_strength("player_pitch_down")
     roll = Input.get_action_strength("player_roll_left") - Input.get_action_strength("player_roll_right")
-#    yaw = Input.get_action_strength("player_yaw_left") - Input.get_action_strength("player_yaw_right")
+    yaw = Input.get_action_strength("player_yaw_left") - Input.get_action_strength("player_yaw_right")
 
-    thrust += (Input.get_action_strength("player_thrust_up") - Input.get_action_strength("player_thrust_down")) * THRUST_DELTA * delta
+    thrust = (Input.get_action_strength("player_thrust_up") - Input.get_action_strength("player_thrust_down")) / 2 + 0.5
     #flight controller for smoothing angular motion
     var local_angular_velocity = global_transform.basis.xform_inv(angular_velocity)
     var local_angular_velocity_derivative = local_angular_velocity - prev_local_angular_velocity
+    prev_local_angular_velocity = local_angular_velocity
     if abs(roll) == 0:
         roll -= local_angular_velocity.z * roll_p  + local_angular_velocity_derivative.z * roll_d
-
     if abs(pitch) == 0:
-        pitch -= local_angular_velocity.x * pitch_p + local_angular_velocity_derivative.x * pitch_p
-
+        pitch -= local_angular_velocity.x * pitch_p + local_angular_velocity_derivative.x * pitch_d
+    if abs(yaw) == 0:
+        yaw -= local_angular_velocity.y * yaw_p + local_angular_velocity_derivative.y * yaw_d
 #        if randf() < 0.1:
 #            print("pitch speed: ", local_angular_velocity.x, ", roll speed: ", local_angular_velocity.z)
 
     pitch = clamp(pitch, -1.0, 1.0)
     roll = clamp(roll, -1.0, 1.0)
+    yaw = clamp(yaw, -1.0, 1.0)
     thrust = clamp(thrust, 0.0, 1.0)
 
     if randf() < 0.1:
@@ -131,7 +136,12 @@ func _integrate_forces(state):
 
 func rotate_control_surfaces():
     for surface in surfaces:
-        surface.spatial.transform.basis = Basis(degvec2rad(surface.rot) + Vector3.RIGHT * surface.roll * roll * ROLL_DEFLECTION + Vector3.RIGHT * surface.pitch * pitch * PITCH_DEFLECTION)
+        surface.spatial.transform.basis = Basis(
+            degvec2rad(surface.rot) + 
+            Vector3.RIGHT * surface.roll * roll * ROLL_DEFLECTION + 
+            Vector3.RIGHT * surface.pitch * pitch * PITCH_DEFLECTION +
+            Vector3.UP * surface.yaw * yaw * YAW_DEFLECTION
+        )
 
 func get_energy():
     return mass * gravity_scale * global_transform.origin.y + 0.5 * mass * linear_velocity.length_squared()
@@ -324,7 +334,12 @@ func build_surface(surface_json) -> Surface:
         surface.roll = sign(surface.spatial.transform.origin.dot(surface.spatial.transform.basis.x)) * transform.basis.x.dot(surface.spatial.transform.basis.x)
     else:
         surface.roll = 0.0
+        
     
+    if surface_json['yaw']:
+        surface.yaw = -sign(surface.spatial.transform.origin.dot(surface.spatial.transform.basis.z)) * transform.basis.y.dot(surface.spatial.transform.basis.x)
+    else:
+        surface.yaw = 0.0
     
     
     return surface
@@ -338,6 +353,7 @@ func mirror_surface(surface: Surface, mirrorX: bool, mirrorY: bool) -> Surface:
     m_surface.rot = surface.rot
     m_surface.pitch = surface.pitch
     m_surface.roll = surface.roll
+    m_surface.yaw = surface.yaw
     
     var origin = surface.spatial.transform.origin
     
@@ -356,6 +372,7 @@ func mirror_surface(surface: Surface, mirrorX: bool, mirrorY: bool) -> Surface:
 #        m_surface.rot.y = surface.rot.y
         m_surface.rot.z = -surface.rot.z
         origin.y *= -1
+#        m_surface.yaw = -surface.yaw
     
     #determine the transform of the surface (origin was already computed)
     var basis = Basis(degvec2rad(m_surface.rot))

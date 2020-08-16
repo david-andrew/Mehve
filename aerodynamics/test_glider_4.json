@@ -8,6 +8,7 @@
             "lift": true,
             "pitch": false,
             "roll": false,
+            "yaw": false,
             "mirrorX": true,
             "mirrorY": false
         },
@@ -18,6 +19,7 @@
             "lift": false,
             "pitch": false,
             "roll": true,
+            "yaw": false,
             "mirrorX": true,
             "mirrorY": false
         },
@@ -28,6 +30,7 @@
             "lift": true,
             "pitch": true,
             "roll": false,
+            "yaw": false,
             "mirrorX": true,
             "mirrorY": false
         },
@@ -38,6 +41,7 @@
             "lift": false,
             "pitch": false,
             "roll": false,
+            "yaw": false,
             "mirrorX": false,
             "mirrorY": false
         },
@@ -48,6 +52,7 @@
             "lift": false,
             "pitch": false,
             "roll": false,
+            "yaw": true,
             "mirrorX": false,
             "mirrorY": false
         }
