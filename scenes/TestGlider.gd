@@ -27,11 +27,11 @@ const YAW_DEFLECTION = PI / 8
 
 #PID gains for controller
 const roll_p = 1.0#2.0
-const roll_d = 0.5
-const pitch_p = 1.0
+const roll_d = 0.15
+const pitch_p = 1.2
 const pitch_d = 0.0
 const yaw_p = 2.0
-const yaw_d = 2.0
+const yaw_d = 0.8
 
 var prev_local_angular_velocity: Vector3 = Vector3.ZERO
 

@@ -18,7 +18,7 @@ void fragment() {
 
 [sub_resource type="ShaderMaterial" id=3]
 shader = SubResource( 2 )
-shader_param/albedo = Color( 1, 1, 1, 1 )
+shader_param/albedo = Color( 0.588235, 0.588235, 0.588235, 0.607843 )
 
 [node name="VaporTrail" type="Spatial"]
 script = ExtResource( 1 )
