@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://textures/grass.jpg" type="Texture" id=1]
 [ext_resource path="res://scenes/TestGlider.gd" type="Script" id=2]
+[ext_resource path="res://scenes/CameraRoot.gd" type="Script" id=3]
 
 [sub_resource type="BoxShape" id=1]
 
@@ -43,11 +44,6 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 181.233, 149.879 )
 script = ExtResource( 2 )
 
-[node name="Camera" type="Camera" parent="TestGlider"]
-transform = Transform( 1, 0, 0, 0, 0.861015, 0.50858, 0, -0.50858, 0.861015, 0.00213456, 2.50616, 9.38213 )
-current = true
-far = 2000.0
-
 [node name="MassSimulator" type="CollisionShape" parent="TestGlider"]
 transform = Transform( 1, 1.0943e-08, 0, 8.03266e-09, 1, 1.86265e-09, 3.72529e-09, 1.86265e-09, 1, 0, 0, 0 )
 shape = SubResource( 4 )
@@ -61,6 +57,14 @@ transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, 0
 shape = SubResource( 6 )
 
 [node name="MeshRoot" type="Spatial" parent="TestGlider"]
+
+[node name="CameraRoot" type="Spatial" parent="TestGlider"]
+script = ExtResource( 3 )
+
+[node name="Camera" type="Camera" parent="TestGlider/CameraRoot"]
+transform = Transform( 1, 0, 0, 0, 0.998015, 0.0629697, 0, -0.0629697, 0.998015, 0.00213456, 0.436111, 15.7188 )
+current = true
+far = 10000.0
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.999825, 0.0187261, 0, -0.0187261, 0.999825, 0, 113.71, 286.08 )

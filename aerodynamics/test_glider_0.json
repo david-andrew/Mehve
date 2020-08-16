@@ -2,9 +2,9 @@
     "surfaces": 
     [
         {
-            "root": [0, 0, 2.5],
+            "root": [0, 0, 0.5],
             "dims": [8.75, 0.05, 1],
-            "rotZ": 5,
+            "rotZ": 1,
             "lift": true,
             "mirrorX": true,
             "mirrorY": false
