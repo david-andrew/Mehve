@@ -64,5 +64,18 @@
             "root": [0, 0, 0],
             "mass": 500
         }
+    ],
+    "motors": [
+        {
+            "root": [0, 0, 8],
+            "thrust": 10000
+        }
+    ],
+    "trails": [
+        {
+            "root": [5.875, 0, 1.75],
+            "mirrorX": true,
+            "mirrorY": false
+        }
     ]
 }

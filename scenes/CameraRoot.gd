@@ -18,7 +18,7 @@ func _ready():
 func _process(delta):
     #get input, modify azimuth and altitude
     var h_input = Input.get_action_strength("camera_orbit_left") - Input.get_action_strength("camera_orbit_right")
-    var v_input = Input.get_action_strength("camera_orbit_up") - Input.get_action_strength("camera_orbit_down")
+    var v_input = (Input.get_action_strength("camera_orbit_up") - Input.get_action_strength("camera_orbit_down"))
 
     altitude -= v_input * VSPEED * delta
     azimuth -= h_input * HSPEED * delta

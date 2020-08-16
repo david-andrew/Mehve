@@ -1,6 +1,7 @@
 extends RigidBody
 
 export var aero_model_path = 'res://aerodynamics/test_glider_4.json'
+var vapor_trail = preload("res://scenes/VaporTrail.tscn")
 
 export var WING_DENSITY = 200 #kilograms / meter^3
 export var LIFT_TO_DRAG_RATIO = 5#70
@@ -37,11 +38,13 @@ var prev_local_angular_velocity: Vector3 = Vector3.ZERO
 #const ROLL_STRENGTH = 10000
 #const PITCH_STRENGTH = 20000
 #const YAW_STRENGTH = 10000
-const THRUST_STRENGTH = 10000
+const THRUST_STRENGTH = 20000
 
 
 var surfaces = [] #array of surface nodes
 var weights = []
+var trails = []
+var motors = []
 
 class Weight:
     var spatial: Spatial
@@ -57,6 +60,13 @@ class Surface:
     var yaw: float
     var mirrorX: bool
     var mirrorY: bool
+    
+#class Trail:
+#    var root: Vector3
+    
+class Motor:
+    var spatial: Spatial
+    var thrust: float
 
 
 # Called when the node enters the scene tree for the first time.
@@ -148,16 +158,6 @@ func get_energy():
 
 # compute the force and torque at the CoM for the given surface
 func get_surface_forces(surface: Surface, V_CoM: Vector3, W: Vector3):
-    #tasks:
-    # y face linear blunt force + torque
-    # y face angular blunt force + torque
-    # other faces blunt...
-    
-    # -z linear lift + drag
-    # angular lift + drag?
-    # etc
-    # other faces?
-    
 
     # vector from CoM to center of surface	
     var r: Vector3 = surface.spatial.global_transform.origin - global_transform.origin
@@ -196,28 +196,18 @@ func get_surface_forces(surface: Surface, V_CoM: Vector3, W: Vector3):
        
     
     # y face lift force + torque
-#    var Vz_CoM =  V_CoM.dot(basis_z) * basis_z
     var Fy_lift: Vector3 = 0.5 * Cl * AIR_DENSITY * area_y * Vz.length_squared() * basis_y if surface.lift else Vector3.ZERO
     var Fy_pressure = Fy_lift.length() / area_y
-#    if Fy_pressure > 0 and randf() < 0.1:
-#        print("pressure: ", Fy_pressure)
     if surface.mirrorX:
         Fy_lift *= -1
     var Ty_lift: Vector3 = r.cross(Fy_lift)
     
     # y face drag force + torque
-#    var Fy_drag: Vector3 = 0.5 * Cd * AIR_DENSITY * area_y * Vz.length_squared() * Vz.normalized() if surface.lift else Vector3.ZERO
     var Fy_drag: Vector3 = Fy_lift.length() / LIFT_TO_DRAG_RATIO * Vz.normalized()
     var Ty_drag: Vector3 = r.cross(Fy_drag)
     
-    
-#    #debug
-#    if surface.lift and randf() < 0.1:
-#        print(Fy_lift)
-#
-#
-    
-    
+
+    # combine all components of lift force + torque, and return    
     var F: Vector3 = Fy_blunt + Fy_drag + Fy_lift
     var T: Vector3 = Tyy_blunt + Tyz_blunt + Tyx_blunt + Ty_lift + Ty_drag 
     return [F, T]
@@ -255,6 +245,19 @@ func load_aerodynamics():
         weight.spatial = Spatial.new()
         weight.spatial.transform = Transform(Basis.IDENTITY, root)
         weights.append(weight)
+        
+    for trail_json in model['trails']:
+        var mirrorX = trail_json['mirrorX']
+        var mirrorY = trail_json['mirrorY']
+        var root := array_to_vector3(trail_json['root'])
+        trails.append(root)
+        if mirrorX:
+            trails.append(Vector3(-root.x, root.y, root.z))
+        if mirrorY:
+            trails.append(Vector3(root.x, -root.y, root.z))
+        if mirrorX and mirrorY:
+            trails.append(Vector3(-root.x, -root.y, root.z))
+        
         
         
 
@@ -294,6 +297,8 @@ func load_aerodynamics():
     for weight in weights:
         weight.spatial.transform.origin -= CoM
         add_child(weight.spatial)
+    for i in range(trails.size()):
+        trails[i] -= CoM
             
     #set the mass_simulator shape's dimensions based on the required moment of inertia
     var mass_simulator = $MassSimulator
@@ -380,13 +385,17 @@ func mirror_surface(surface: Surface, mirrorX: bool, mirrorY: bool) -> Surface:
     m_surface.spatial.transform = Transform(basis, origin)
     
     return m_surface
-    
-    
+
+
 func add_surface_geometry():
+    var material := SpatialMaterial.new()
+    material.flags_do_not_receive_shadows = true
+
     for surface in surfaces:
         var geometry := MeshInstance.new()
         geometry.mesh = CubeMesh.new()
         geometry.mesh.size = surface.dims
+        geometry.mesh.material = material
 #        geometry.transform = surface.spatial.transform
 #        $MeshRoot.add_child(geometry)
         surface.spatial.add_child(geometry)
@@ -396,17 +405,22 @@ func add_surface_geometry():
         geometry.mesh = SphereMesh.new()
         geometry.mesh.radius = 0.5
         geometry.mesh.height = 1.0
+        geometry.mesh.material = material
         geometry.transform = weight.spatial.transform
         $MeshRoot.add_child(geometry)
         
+    for root in trails:
+        var trail = vapor_trail.instance()
+        trail.transform.origin = root
+        $MeshRoot.add_child(trail)
     
 #Helper function to convert an array of length 3 to a Vector3
-func array_to_vector3(arr):
+func array_to_vector3(arr) -> Vector3:
     return Vector3(arr[0], arr[1], arr[2])
 
-func degvec2rad(v: Vector3):
+func degvec2rad(v: Vector3) -> Vector3:
     return Vector3(deg2rad(v.x), deg2rad(v.y), deg2rad(v.z))
     
-func radvect2deg(v: Vector3):
+func radvect2deg(v: Vector3) -> Vector3:
     return Vector3(rad2deg(v.x), rad2deg(v.y), rad2deg(v.z))
     
