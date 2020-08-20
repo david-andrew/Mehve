@@ -33,6 +33,8 @@ const pitch_d = 0.0
 const yaw_p = 2.0
 const yaw_d = 0.8
 
+const speed_coeff = 0.00001# 1.0 / 100000 #multiply all gains by min(0.0, 1.0 - speed_coeff * velocity^2) to decrease gain as velocity increases
+
 var prev_local_angular_velocity: Vector3 = Vector3.ZERO
 
 #const ROLL_STRENGTH = 10000
@@ -85,28 +87,33 @@ func _process(delta):
     yaw = Input.get_action_strength("player_yaw_left") - Input.get_action_strength("player_yaw_right")
 
     thrust = (Input.get_action_strength("player_thrust_up") - Input.get_action_strength("player_thrust_down")) / 2 + 0.5
+
     #flight controller for smoothing angular motion
+    
+    #the faster the airplane, the less input the controller has
+    var velocity2 = linear_velocity.length_squared()
+    var speed_gain = max(0.0, 1.0 - velocity2 * speed_coeff)
+    
     var local_angular_velocity = global_transform.basis.xform_inv(angular_velocity)
     var local_angular_velocity_derivative = local_angular_velocity - prev_local_angular_velocity
-    prev_local_angular_velocity = local_angular_velocity
+    prev_local_angular_velocity = local_angular_velocity #save previous velocity for next frame
     if abs(roll) == 0:
-        roll -= local_angular_velocity.z * roll_p  + local_angular_velocity_derivative.z * roll_d
+        roll -= speed_gain * (local_angular_velocity.z * roll_p  + local_angular_velocity_derivative.z * roll_d)
     if abs(pitch) == 0:
-        pitch -= local_angular_velocity.x * pitch_p + local_angular_velocity_derivative.x * pitch_d
+        pitch -= speed_gain * (local_angular_velocity.x * pitch_p + local_angular_velocity_derivative.x * pitch_d)
     if abs(yaw) == 0:
-        yaw -= local_angular_velocity.y * yaw_p + local_angular_velocity_derivative.y * yaw_d
-#        if randf() < 0.1:
-#            print("pitch speed: ", local_angular_velocity.x, ", roll speed: ", local_angular_velocity.z)
+        yaw -= speed_gain * (local_angular_velocity.y * yaw_p + local_angular_velocity_derivative.y * yaw_d)
 
     pitch = clamp(pitch, -1.0, 1.0)
     roll = clamp(roll, -1.0, 1.0)
     yaw = clamp(yaw, -1.0, 1.0)
     thrust = clamp(thrust, 0.0, 1.0)
 
-    if randf() < 0.1:
-        print("thrust: ", thrust * THRUST_STRENGTH)
+
+    rotate_control_surfaces()
+    
+    #TODO->turn off vapor trails unless going fast enough
         
-    rotate_control_surfaces()  
 
 func _integrate_forces(state):
     var net_force = Vector3.ZERO
