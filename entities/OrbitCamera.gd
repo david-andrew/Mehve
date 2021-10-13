@@ -4,8 +4,10 @@ extends Spatial
 var altitude = 0
 var azimuth = 0
 
-const HSPEED = 1.0
-const VSPEED = 1.0
+#TODO->move this to a menu that reads from a saved config parameter
+const SENSITIVITY = 2.5
+const HSPEED = 1.0 * SENSITIVITY
+const VSPEED = 1.0 * SENSITIVITY
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
