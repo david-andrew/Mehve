@@ -1,0 +1,81 @@
+{
+    "surfaces": 
+    [
+        {
+            "root": [0, 0, 1.0],
+            "dims": [6, 0.05, 1.0],
+            "rot": [0, 0, 0],
+            "lift": true,
+            "pitch": false,
+            "roll": false,
+            "yaw": false,
+            "mirrorX": true,
+            "mirrorY": false
+        },
+        {
+            "root": [3, 0, 1.5],
+            "dims": [3, 0.05, 0.5],
+            "rot": [0, 0, 0],
+            "lift": false,
+            "pitch": false,
+            "roll": true,
+            "yaw": false,
+            "mirrorX": true,
+            "mirrorY": false
+        },
+        {
+            "root": [0, 0, 8],
+            "dims": [2, 0.05, 1.0],
+            "rot": [-2, 0, 0],
+            "lift": true,
+            "pitch": true,
+            "roll": false,
+            "yaw": false,
+            "mirrorX": true,
+            "mirrorY": false
+        },
+        {
+            "root": [0, 0, 0],
+            "dims": [8, 0.05, 1.0],
+            "rot": [90, 0, 90],
+            "lift": false,
+            "pitch": false,
+            "roll": false,
+            "yaw": false,
+            "mirrorX": false,
+            "mirrorY": false
+        },
+        {
+            "root": [0, 0, 8],
+            "dims": [2, 0.05, 1.0],
+            "rot": [0, 0, 90],
+            "lift": false,
+            "pitch": false,
+            "roll": false,
+            "yaw": true,
+            "mirrorX": false,
+            "mirrorY": false
+        }
+
+    ],
+    "weights": 
+    [
+        {
+            "root": [0, 0, 0],
+            "mass": 500
+        }
+    ],
+    "motors": [
+        {
+            "root": [0, 0, 8],
+            "thrust": 10000
+        }
+    ],
+    "trails": [
+        {
+            "root": [5.875, 0, 1.75],
+            "mirrorX": true,
+            "mirrorY": false
+        }
+    ]
+}

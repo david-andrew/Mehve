@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://entities/OrbitCamera.gd" type="Script" id=1]
+[ext_resource path="res://entities/vehicles/TestGlider.gd" type="Script" id=2]
+
+[sub_resource type="BoxShape" id=1]
+
+[node name="TestGlider" type="RigidBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 181.233, 149.879 )
+script = ExtResource( 2 )
+
+[node name="MassSimulator" type="CollisionShape" parent="."]
+transform = Transform( 1, 1.0943e-08, 0, 8.03266e-09, 1, 1.86265e-09, 3.72529e-09, 1.86265e-09, 1, 0, 0, 0 )
+shape = SubResource( 1 )
+
+[node name="MeshRoot" type="Spatial" parent="."]
+
+[node name="CameraRoot" type="Spatial" parent="."]
+script = ExtResource( 1 )
+
+[node name="Camera" type="Camera" parent="CameraRoot"]
+transform = Transform( 1, 0, 0, 0, 0.998015, 0.0629697, 0, -0.0629697, 0.998015, 0.00213456, 0.436111, 15.7188 )
+current = true
+far = 10000.0

@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://textures/grass.jpg" type="Texture" id=1]
+[ext_resource path="res://debug/AeroSurfaceDebugGeometry.gd" type="Script" id=2]
+
+[sub_resource type="BoxShape" id=1]
+
+[sub_resource type="SpatialMaterial" id=2]
+flags_vertex_lighting = true
+albedo_texture = ExtResource( 1 )
+uv1_scale = Vector3( 3072, 2048, 1 )
+
+[sub_resource type="CubeMesh" id=3]
+material = SubResource( 2 )
+
+[sub_resource type="BoxShape" id=4]
+
+[sub_resource type="CubeMesh" id=5]
+
+[node name="TestLevel" type="Spatial"]
+
+[node name="Ground" type="StaticBody" parent="."]
+transform = Transform( 4096, 0, 0, 0, 1, 0, 0, 0, 4096, 0, 0, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Ground"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Ground"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.97999e-06, -0.00858021, 1.10641e-06 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.999825, 0.0187261, 0, -0.0187261, 0.999825, 0, 113.71, 286.08 )
+far = 2000.0
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 0.90362, -0.2133, -0.37145, 0.428336, 0.449978, 0.783612, 0, -0.867192, 0.497973, 0, 11.0925, 0 )
+shadow_enabled = true
+
+[node name="PlaneBody" type="RigidBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.65496, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PlaneBody"]
+shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="PlaneBody"]
+mesh = SubResource( 5 )
+material/0 = null
+
+[node name="Camera" type="Camera" parent="PlaneBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.20875 )
+current = true
+
+[node name="AeroSurfaceDebugGeometry" type="ImmediateGeometry" parent="PlaneBody"]
+script = ExtResource( 2 )
