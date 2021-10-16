@@ -1,0 +1,19 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/11805_airplane_v2_L2.obj-47f2e6548de0a7bcd9af9c073653d5df.mesh"
+
+[deps]
+
+files=[ "res://.import/11805_airplane_v2_L2.obj-47f2e6548de0a7bcd9af9c073653d5df.mesh" ]
+
+source_file="res://entities/vehicles/LeerJet/11805_airplane_v2_L2.obj"
+dest_files=[ "res://.import/11805_airplane_v2_L2.obj-47f2e6548de0a7bcd9af9c073653d5df.mesh", "res://.import/11805_airplane_v2_L2.obj-47f2e6548de0a7bcd9af9c073653d5df.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh=true

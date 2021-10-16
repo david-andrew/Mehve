@@ -21,7 +21,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Mehve"
-run/main_scene="res://scenes/TestLevel.tscn"
+run/main_scene="res://scenes/TestLevel2.tscn"
 config/icon="res://textures/icon.png"
 
 [autoload]
