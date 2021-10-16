@@ -6,8 +6,8 @@ const RUN_SPEED = 20
 const GROUND_ACCELERATION = 30
 const AIR_ACCELERATION = 10
 const H_ANGULAR_SPEED = 5
-const JUMP_IMPULSE = 10
-const GRAVITY = 9.8 #should be pulled from some sort of global
+const JUMP_IMPULSE = 20
+const GRAVITY = 98 #should be pulled from some sort of global
 
 
 
@@ -18,6 +18,8 @@ var vertical = 0
 var angle = 0
 var run = false
 var grounded = false
+var jump = false
+var prev_jump = false #when jump is released, so that don't jump continuously
 
 
 # Called when the node enters the scene tree for the first time.
@@ -30,13 +32,22 @@ func _process(delta):
 	forward = Input.get_action_strength("3rd_person_forward") - Input.get_action_strength("3rd_person_backward")
 	sideways = Input.get_action_strength("3rd_person_right") - Input.get_action_strength("3rd_person_left")
 	run = Input.is_action_pressed("3rd_person_run")
+	jump = Input.is_action_pressed("3rd_person_jump")
+	if prev_jump:
+		prev_jump = Input.is_action_pressed("3rd_person_jump")
 
-#	grounded = is_on_floor()
-#	if not grounded:
-#		vertical -= GRAVITY * delta
-#	else:
-#		vertical = 0
-
+	grounded = is_on_floor()
+	if not grounded:
+		vertical -= GRAVITY * delta
+	else:
+		if jump and !prev_jump:
+			vertical = JUMP_IMPULSE
+			prev_jump = true
+#		vertical = JUMP_IMPULSE if (jump and !prev_jump) else 0
+		else:
+			vertical = 0
+			
+		
 	var speed = RUN_SPEED if run else GROUND_SPEED
 	
 	var camera_azimuth = $OrbitCamera.azimuth
@@ -47,7 +58,7 @@ func _process(delta):
 
 	var motion = convert_strafe_to_3d(strafe) * speed + Vector3.UP * vertical
 
-	move_and_collide(motion * delta)
+	move_and_slide(motion, Vector3.UP, false, 9999, 1.22173)
 	self.transform.basis = Basis.IDENTITY.rotated(Vector3.UP, angle)
 
 

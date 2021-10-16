@@ -41,6 +41,7 @@ shadow_enabled = true
 
 [node name="PlaneBody" type="RigidBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.65496, 0 )
+gravity_scale = 5.0
 
 [node name="CollisionShape" type="CollisionShape" parent="PlaneBody"]
 shape = SubResource( 4 )
