@@ -13,12 +13,14 @@ var Cl = LIFT_TO_DRAG_RATIO * Cd	#coefficient of lift (based on lift to drag rat
 
 #forces applied to the craft
 #TODO->replace torques with control surfaces? alternatively, make torques proportional to speed? control surfaces maybe allow for stall?
-var thrust = 0
+#var thrust = 0
+var player_in_control = true#false
+var throttle = 0 #percent from 0-1
 var pitch = 0
 var roll = 0
 var yaw = 0
 export var TORQUE_APPLY = 50#0.5
-export var THRUST_DELTA = 1.0#0.1
+export var THRUST_DELTA = 0.5#0.1
 
 const ROLL_DEFLECTION = PI / 8
 const PITCH_DEFLECTION = PI / 12
@@ -40,7 +42,7 @@ var prev_local_angular_velocity: Vector3 = Vector3.ZERO
 #const ROLL_STRENGTH = 10000
 #const PITCH_STRENGTH = 20000
 #const YAW_STRENGTH = 10000
-const THRUST_STRENGTH = 20000
+const THRUST_STRENGTH = 50000
 
 
 var surfaces = [] #array of surface nodes
@@ -74,20 +76,32 @@ class Motor:
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	load_aerodynamics()
-	add_surface_geometry()
+#	add_surface_geometry() #using leer jet model #TODO->call this if there is no mesh instance
 #    apply_torque_impulse(Vector3.BACK * 10000)
 #	apply_central_impulse()
-	linear_velocity = global_transform.basis.xform(Vector3.FORWARD) * 50
+#	linear_velocity = global_transform.basis.xform(Vector3.FORWARD) * 50
 #    angular_velocity = global_transform.basis.xform(Vector3.BACK) * 20
-	thrust = 0.80
+#	thrust = 0.80
+	throttle = 0.5
 	
 func _process(delta):
-	pitch = Input.get_action_strength("player_pitch_up") - Input.get_action_strength("player_pitch_down")
-	roll = Input.get_action_strength("player_roll_left") - Input.get_action_strength("player_roll_right")
-	yaw = Input.get_action_strength("player_yaw_left") - Input.get_action_strength("player_yaw_right")
+	
+	#draw the throttle text to the UI
+	$ThrottleText.text = "Throttle %d%%" % (throttle * 100)
+	
+	if player_in_control:
+		pitch = Input.get_action_strength("player_pitch_up") - Input.get_action_strength("player_pitch_down")
+		roll = Input.get_action_strength("player_roll_left") - Input.get_action_strength("player_roll_right")
+		yaw = Input.get_action_strength("player_yaw_left") - Input.get_action_strength("player_yaw_right")
 
-	thrust = (Input.get_action_strength("player_thrust_up") - Input.get_action_strength("player_thrust_down")) / 2 + 0.5
-
+		var throttle_delta = (Input.get_action_strength("player_thrust_up") - Input.get_action_strength("player_thrust_down")) * delta * THRUST_DELTA
+		throttle += throttle_delta
+	else:
+		pitch = 0
+		roll = 0
+		yaw = 0
+		throttle = 0
+	
 	#flight controller for smoothing angular motion
 	
 	#the faster the airplane, the less input the controller has
@@ -107,8 +121,8 @@ func _process(delta):
 	pitch = clamp(pitch, -1.0, 1.0)
 	roll = clamp(roll, -1.0, 1.0)
 	yaw = clamp(yaw, -1.0, 1.0)
-	thrust = clamp(thrust, 0.0, 1.0)
-
+#	thrust = clamp(thrust, 0.0, 1.0)
+	throttle = clamp(throttle, 0.0, 1.0)
 
 	rotate_control_surfaces()
 	
@@ -138,7 +152,7 @@ func _integrate_forces(state):
 #    var roll_torque: Vector3 = global_transform.basis.xform(Vector3.BACK) * roll * ROLL_STRENGTH * forward.length_squared()
 #    var yaw_torque: Vector3 = global_transform.basis.xform(Vector3.UP) * yaw * YAW_STRENGTH * forward.length_squared()
 #    var pitch_torque: Vector3 = global_transform.basis.xform(Vector3.RIGHT) * pitch * PITCH_STRENGTH * forward.length_squared()
-	var thrust_force: Vector3 = global_transform.basis.xform(Vector3.FORWARD) * thrust * THRUST_STRENGTH
+	var thrust_force: Vector3 = global_transform.basis.xform(Vector3.FORWARD) * throttle * THRUST_STRENGTH
 	
 #    net_torque += roll_torque + yaw_torque + pitch_torque
 	net_force += thrust_force
@@ -308,11 +322,11 @@ func load_aerodynamics():
 		trails[i] -= CoM
 			
 	#set the mass_simulator shape's dimensions based on the required moment of inertia
-	var mass_simulator = $MassSimulator
-	var x = sqrt(6 / mass * (-Ix + Iy + Iz))
-	var y = sqrt(6 / mass * (+Ix - Iy + Iz))
-	var z = sqrt(6 / mass * (+Ix + Iy - Iz))
-	mass_simulator.shape.extents = Vector3(x/2, y/2, z/2)
+#	var mass_simulator = $MassSimulator
+#	var x = sqrt(6 / mass * (-Ix + Iy + Iz))
+#	var y = sqrt(6 / mass * (+Ix - Iy + Iz))
+#	var z = sqrt(6 / mass * (+Ix + Iy - Iz))
+#	mass_simulator.shape.extents = Vector3(x/2, y/2, z/2)
 	
 
 
